@@ -1,0 +1,51 @@
+---
+- hosts: all
+  become: true
+  become_user: root
+
+  tasks:
+    - name: Install required system packages using yum
+      yum:
+        name: 
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+          - python3
+        state: present
+
+#     - name: Add Docker Repository
+#       yum_repository:
+#         name: docker
+#         description: Docker YUM repo
+#         baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+
+#     - name: Install docker-ce
+#       yum:
+#         name: docker-ce
+#         state: latest
+#         update_cache: yes
+
+    - name: Install docker
+      command: amazon-linux-extras install -y docker
+        
+    - name: Starting and Enabling Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create springboot containers
+      command: docker run -dit -p8080:5000 --name sh-cicd-test tmaxcqa/test:sh-cicd-test
+
+#     - name: Pull springboot image
+#       docker_image:
+#         name: tmaxcqa/test:sh-cicd-test
+#         source: pull
+        
+#     - name: Create springboot containers
+#       docker_container:
+#         name: sh-cicd-test
+#         image: tmaxcqa/test:sh-cicd-test
+#         exposed_ports:
+#           - 5000
+#         state: present
